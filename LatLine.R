@@ -6,7 +6,7 @@ morph <- read_csv("LL.Morph.csv")
 activity <- read_csv("LL.Activity.csv")
 combined <- inner_join(morph, activity)
 diurnal <- filter(combined, Activity == "D") #66 species, 19 families
-nocturnal <- filter(combined, Activity == "N") #38 14 families
+nocturnal <- filter(combined, Activity == "N") #38 species, 15 families
 
 #violin plots of three parameters: figure 1
 figA <- ggplot(data = combined) + aes(x = Activity, y = Norm.PA) +  geom_violin() + geom_point() + labs(y= "Pore Area (mm2/TL)") +  theme_cowplot()
@@ -16,16 +16,20 @@ figB <- ggplot(data = combined) + aes(x = Activity, y = Norm.CN) +  geom_violin(
 figC <- ggplot(data = combined) + aes(x = Activity, y = Norm.C.Width) +  geom_violin() + geom_point() + labs(y= "Canal Width (mm/TL)") +  theme_cowplot()
 fig1 <-figA + figB + figC + plot_annotation(tag_levels = 'A')
 fig1
+ggsave("LL_fig1.jpg", fig1, width = 12, height = 8)
 
 #aim 2: figures 2-4
 fig2 <- ggplot(data = nocturnal) + aes(x = Family, y = Norm.C.Width) + geom_point(size = 2) + labs (y = "Canal Width (mm/TL)") + theme_cowplot()
 fig2
+ggsave("LL_fig2.jpg", fig2, width = 12, height = 8)
 #apogonidae and myctophidae seem to be widening canals (see literature for which species have been noted to do this), also look and see which species have been noted to use replacement neuromasts- should be ones with higher CN values- wait that should be superficial ones not canal neuromasts
 fig3 <- ggplot(data = nocturnal) + aes(x = Family, y = Norm.CN) + geom_point(size = 2) + labs (y = "Canal Neuromasts (#/TL)") + theme_cowplot()
 fig3
+ggsave("LL_fig3.jpg", fig3, width = 12, height = 8)
 #a species of serranid and sciaenid (see which ones specifically: equetus punctatus and rypictus saponaceus)
 fig4 <- ggplot(data = nocturnal) + aes(x = Family, y = Norm.PA) + geom_point(size = 2) + labs (y = "Pore Area (mm2/TL)") + theme_cowplot()
 fig4
+ggsave("LL_fig4.jpg", fig4, width = 12, height = 8)
 #same two families with higher values/wider pores
 
 #pca- figure 5
@@ -35,12 +39,13 @@ noct.pca <- prcomp (~ Norm.CN + Norm.C.Width + Norm.PA, data = nocturnal,
                     center = T)
 noct_plot <- ggbiplot(noct.pca, obs.scale = 1, var.scale = 1, varname.size = 6, varname.adjust = 1.6) + geom_point(aes(color = nocturnal$Family), size = 4) + theme_cowplot() + labs(color = "Family")
 print(noct_plot)
+ggsave("LL_fig5.jpg", noct_plot, width = 12, height = 8)
 
 #correlation- figure 6
-library(ggpubr)
 cor.test(combined$Norm.VSA, combined$Norm.CN)
 fig6 <- ggplot(data = combined) + aes(x = Norm.VSA, y = Norm.CN) +geom_point(size = 2) +geom_smooth(se = F, method = "lm", color = "red") + stat_cor(method = "pearson", label.x = 0.15, label.y = 2, size = 6)+ labs(x = "Visible Scale Area (mm2/TL)", y = "Canal Neuromasts (#/TL)") + theme_cowplot()
 fig6
+ggsave("LL_fig6.jpg", fig6, width = 12, height = 8)
 
 #t-tests comparing two groups
 library(lsr)
